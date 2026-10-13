@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function businessPath(businessId) {
+      return /databases/$(database)/documents/businesses/$(businessId);
+    }
+
+    function isBusinessOwner(businessId) {
+      return signedIn()
+        && get(businessPath(businessId)).data.ownerId == request.auth.uid;
+    }
+
+    function isBusinessMember(businessId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/businesses/$(businessId)/members/$(request.auth.uid));
+    }
+
+    function canAccessBusiness(businessId) {
+      return isBusinessOwner(businessId) || isBusinessMember(businessId);
+    }
+
+    match /businesses/{businessId} {
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.currencyCode == 'PKR';
+
+      allow get, list: if signedIn()
+        && (resource.data.ownerId == request.auth.uid || isBusinessMember(businessId));
+
+      allow update: if signedIn()
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId;
+
+      // Business deletion is intentionally disabled to protect ledger history.
+      allow delete: if false;
+
+      match /members/{memberId} {
+        allow read: if canAccessBusiness(businessId);
+
+        // The owner membership is created atomically with the business document.
+        allow create: if signedIn()
+          && memberId == request.auth.uid
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.role == 'owner'
+          && getAfter(businessPath(businessId)).data.ownerId == request.auth.uid;
+
+        // Team invitations and role changes are not part of this initial module.
+        allow update, delete: if false;
+      }
+
+      match /parties/{partyId} {
+        allow read: if canAccessBusiness(businessId);
+        allow create: if canAccessBusiness(businessId)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 160
+          && request.resource.data.partyType in ['customer', 'supplier', 'both'];
+        allow update: if canAccessBusiness(businessId)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 160
+          && request.resource.data.partyType in ['customer', 'supplier', 'both'];
+        allow delete: if false;
+      }
+
+      match /transactions/{transactionId} {
+        allow read: if canAccessBusiness(businessId);
+        allow create: if canAccessBusiness(businessId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.partyId is string
+          && request.resource.data.partyName is string
+          && request.resource.data.transactionType in [
+            'credit_given', 'payment_received', 'credit_taken', 'payment_made'
+          ]
+          && request.resource.data.amountMinor is int
+          && request.resource.data.amountMinor > 0
+          && request.resource.data.occurredAt is timestamp;
+        // Ledger transactions are append-only; corrections should be new entries.
+        allow update, delete: if false;
+      }
+
+      match /expenses/{expenseId} {
+        allow read: if canAccessBusiness(businessId);
+        allow create: if canAccessBusiness(businessId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.category is string
+          && request.resource.data.amountMinor is int
+          && request.resource.data.amountMinor > 0
+          && request.resource.data.occurredAt is timestamp;
+        // Expense records are append-only in this initial implementation.
+        allow update, delete: if false;
+      }
+    }
+
+    // No client-readable global collections are used by this version.
+  }
+}

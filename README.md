@@ -1,61 +1,30 @@
-# KhataFlow
+# KhataFlow — Core business modules
 
-**KhataFlow** is a Flutter-based business ledger application designed to help users manage business accounts, track transactions, and maintain customer and supplier records.
+This source bundle adds the first complete Firestore-backed business workspace around the existing Firebase Auth flow.
 
-## Features
+## Modules included
 
-- Multi-business management and business switching
-- Customer and supplier record management
-- Credit and payment transaction tracking
-- Partial payment tracking
-- Business expense management
-- Firebase integration for authentication and cloud data storage
+1. Multiple owned businesses and in-app business switching.
+2. Dashboard summaries for receivables, payables, expenses, and ledger entry count.
+3. Customer/supplier records with search, edit, notes, and per-party transaction history.
+4. Ledger entries for credit given, payment received, credit taken, and payment made.
+5. Partial payments supported by adding separate transactions, with balances recalculated from the ledger.
+6. Business expense recording with categories and a history list.
+7. Settings/business list, signed-in profile display, and sign out.
+8. Starter Firestore security rules.
 
-## Technology Stack
+## Apply to your existing project
 
-- **Frontend:** Flutter and Dart
-- **Backend and Database:** Firebase Authentication and Cloud Firestore
-- **Platform:** Android
+1. Download and extract the ZIP directly into `C:\Users\DELL\StudioProjects\flutter_test_app`, merging the existing `lib` folder. The archive doesn't contain or replace `pubspec.yaml` or Firebase configuration.
+2. In Android Studio Terminal (PowerShell) run:
 
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK
-- Dart SDK
-- Android Studio
-- A configured Firebase project
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/abdulhanan10/Khata-Flow.git
+   ```powershell
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\scripts\integrate_modules.ps1
    ```
 
-2. Navigate to the project directory:
+   The script adds the workspace import and replaces only the old placeholder `HomeScreen` class. It preserves `AuthGate` and `AuthScreen`; it also stores a one-time backup inside `.git`.
+3. Review and publish `firestore.rules` in Firebase Console → Firestore Database → Rules. Review existing rules before replacing them.
+4. When you're ready to run the full suite, use the commands shown in `INTEGRATION.md`.
 
-   ```bash
-   cd Khata-Flow
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   flutter pub get
-   ```
-
-4. Run the application on a connected device or emulator:
-
-   ```bash
-   flutter run
-   ```
-
-## Development Status
-
-KhataFlow is under active development.
-
-## License
-
-No license has been specified yet.
+This bundle is not represented as end-to-end tested. It needs to be integrated into your local Flutter project and checked with your installed Flutter SDK and Firebase project before use with real ledger data.

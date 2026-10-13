@@ -1,30 +1,34 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:flutter_test_app/main.dart';
+import 'package:flutter_test_app/features/business/business_home_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('formatMoney', () {
+    test('formats rupees and paisa correctly', () {
+      expect(formatMoney(123456), 'Rs 1,234.56');
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('formats whole rupees correctly', () {
+      expect(formatMoney(50000), 'Rs 500.00');
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('formats negative balances correctly', () {
+      expect(formatMoney(-500), '-Rs 5.00');
+    });
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('parseAmountMinor', () {
+    test('converts rupees into minor units', () {
+      expect(parseAmountMinor('123.45'), 12345);
+    });
+
+    test('accepts comma-separated amounts', () {
+      expect(parseAmountMinor('1,234.56'), 123456);
+    });
+
+    test('rejects invalid or non-positive amounts', () {
+      expect(parseAmountMinor('abc'), isNull);
+      expect(parseAmountMinor('0'), isNull);
+      expect(parseAmountMinor('-20'), isNull);
+    });
   });
 }
