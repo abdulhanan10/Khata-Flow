@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "131477496338",
+    "project_id": "khataflow-cfd44",
+    "storage_bucket": "khataflow-cfd44.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131477496338:android:7a34690526b8881aa86ecb",
+        "android_client_info": {
+          "package_name": "com.example.flutter_test_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi5yB8Q3Yeb3DSGCLZNnf61MobMsh538o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
