@@ -137,8 +137,8 @@ class ExpenseRecord {
 /// Firestore access for KhataFlow. All ledger data is nested under a business.
 class KhataFlowRepository {
   KhataFlowRepository({FirebaseFirestore? firestore, String? userId})
-      : _firestore = firestore ?? FirebaseFirestore.instance,
-        _userIdOverride = userId;
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _userIdOverride = userId;
 
   final FirebaseFirestore _firestore;
   final String? _userIdOverride;
@@ -146,7 +146,9 @@ class KhataFlowRepository {
   String get userId {
     final id = _userIdOverride ?? FirebaseAuth.instance.currentUser?.uid;
     if (id == null || id.isEmpty) {
-      throw StateError('A signed-in user is required to access KhataFlow data.');
+      throw StateError(
+        'A signed-in user is required to access KhataFlow data.',
+      );
     }
     return id;
   }
@@ -167,12 +169,13 @@ class KhataFlowRepository {
       _business(businessId).collection('expenses');
 
   Stream<List<BusinessRecord>> watchBusinesses() {
-    return _businesses
-        .where('ownerId', isEqualTo: userId)
-        .snapshots()
-        .map((snapshot) {
+    return _businesses.where('ownerId', isEqualTo: userId).snapshots().map((
+      snapshot,
+    ) {
       final items = snapshot.docs.map(BusinessRecord.fromDocument).toList();
-      items.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+      items.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
       return items;
     });
   }
@@ -207,7 +210,9 @@ class KhataFlowRepository {
   Stream<List<PartyRecord>> watchParties(String businessId) {
     return _parties(businessId).snapshots().map((snapshot) {
       final items = snapshot.docs.map(PartyRecord.fromDocument).toList();
-      items.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+      items.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
       return items;
     });
   }
@@ -246,7 +251,9 @@ class KhataFlowRepository {
     return _transactions(businessId)
         .orderBy('occurredAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map(LedgerEntry.fromDocument).toList());
+        .map(
+          (snapshot) => snapshot.docs.map(LedgerEntry.fromDocument).toList(),
+        );
   }
 
   Future<void> addTransaction({
@@ -257,14 +264,18 @@ class KhataFlowRepository {
     required String description,
     DateTime? occurredAt,
   }) async {
-    if (amountMinor <= 0) throw ArgumentError('Amount must be greater than zero.');
+    if (amountMinor <= 0) {
+      throw ArgumentError('Amount must be greater than zero.');
+    }
     const allowed = {
       'credit_given',
       'payment_received',
       'credit_taken',
       'payment_made',
     };
-    if (!allowed.contains(kind)) throw ArgumentError('Invalid transaction type.');
+    if (!allowed.contains(kind)) {
+      throw ArgumentError('Invalid transaction type.');
+    }
 
     await _transactions(businessId).add({
       'partyId': party.id,
@@ -283,7 +294,9 @@ class KhataFlowRepository {
     return _expenses(businessId)
         .orderBy('occurredAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map(ExpenseRecord.fromDocument).toList());
+        .map(
+          (snapshot) => snapshot.docs.map(ExpenseRecord.fromDocument).toList(),
+        );
   }
 
   Future<void> addExpense({
@@ -293,8 +306,9 @@ class KhataFlowRepository {
     required String description,
     DateTime? occurredAt,
   }) async {
-    if (amountMinor <= 0) throw ArgumentError('Amount must be greater than zero.');
-
+    if (amountMinor <= 0) {
+      throw ArgumentError('Amount must be greater than zero.');
+    }
     await _expenses(businessId).add({
       'amountMinor': amountMinor,
       'category': category,
