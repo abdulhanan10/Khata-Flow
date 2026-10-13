@@ -1,17 +1,61 @@
-# flutter_test_app
+# KhataFlow
 
-A new Flutter project.
+**KhataFlow** is a Flutter-based business ledger application designed to help users manage business accounts, track transactions, and maintain customer and supplier records.
+
+## Features
+
+- Multi-business management and business switching
+- Customer and supplier record management
+- Credit and payment transaction tracking
+- Partial payment tracking
+- Business expense management
+- Firebase integration for authentication and cloud data storage
+
+## Technology Stack
+
+- **Frontend:** Flutter and Dart
+- **Backend and Database:** Firebase Authentication and Cloud Firestore
+- **Platform:** Android
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK
+- Dart SDK
+- Android Studio
+- A configured Firebase project
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/abdulhanan10/Khata-Flow.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd Khata-Flow
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   flutter pub get
+   ```
+
+4. Run the application on a connected device or emulator:
+
+   ```bash
+   flutter run
+   ```
+
+## Development Status
+
+KhataFlow is under active development.
+
+## License
+
+No license has been specified yet.
