@@ -1,2 +1,2 @@
 # Khata-Flow
-KhataFlow - Flutter-based business ledger app
+Khata Flow - Flutter-based business ledger app
