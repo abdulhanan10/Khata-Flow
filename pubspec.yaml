@@ -53,6 +53,8 @@
     flutter_lints: ^6.0.0
     build_runner: ^2.15.1
     json_serializable: ^6.14.1
+    flutter_launcher_icons: ^0.14.4
+    flutter_native_splash: ^2.4.8
 
 
   flutter:
@@ -61,3 +63,23 @@
           - "lib/assets/images/app_logo.png"
 
 
+
+
+  flutter_launcher_icons:
+      android: true
+      ios: false
+      image_path: "lib/assets/images/app_logo_icon.png"
+      adaptive_icon_background: "#FFFFFF"
+      adaptive_icon_foreground: "lib/assets/images/app_logo_icon.png"
+      min_sdk_android: 23
+
+  flutter_native_splash:
+      color: "#FFFFFF"
+      image: "lib/assets/images/app_logo_icon.png"
+      android: true
+      ios: false
+      fullscreen: true
+      android_12:
+          color: "#FFFFFF"
+          image: "lib/assets/images/app_logo_icon.png"
+          icon_background_color: "#FFFFFF"
