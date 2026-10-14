@@ -330,7 +330,7 @@ app.post('/api/assistant', async (req, res) => {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.8-flash',
       generationConfig: { temperature: 0.2, maxOutputTokens: 700 },
     });
 
@@ -347,7 +347,7 @@ app.post('/api/assistant', async (req, res) => {
 
     return res.json({
       answer: result.response.text(),
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.8-flash',
     });
   } catch (error) {
     console.error('Assistant request failed:', error.message);
