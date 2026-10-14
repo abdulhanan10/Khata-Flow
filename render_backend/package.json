@@ -1,0 +1,17 @@
+﻿{
+  "name": "khataflow-render-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.4.0"
+  }
+}

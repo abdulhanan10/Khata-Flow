@@ -17,12 +17,12 @@ class _AuthGateState extends State<AuthGate> {
   @override
   void initState() {
     super.initState();
-    _authChanges = FirebaseAuth.instance.authStateChanges();
+    _authChanges = FirebaseAuth.instance.userChanges();
   }
 
   void _retryAuthStream() {
     setState(() {
-      _authChanges = FirebaseAuth.instance.authStateChanges();
+      _authChanges = FirebaseAuth.instance.userChanges();
     });
   }
 

@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/khataflow_repository.dart';
+import '../assistant/khataflow_assistant_screen.dart';
+import 'khataflow_pulse_screen.dart';
 
 part 'parts/dashboard_page.dart';
 part 'parts/parties_page.dart';

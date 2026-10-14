@@ -157,6 +157,66 @@ class _OverviewPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 22),
+                const _SectionHeading(title: 'KhataFlow smart tools'),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: _line),
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xFFE5F3EF),
+                      child: Icon(Icons.insights_rounded, color: _brand),
+                    ),
+                    title: const Text(
+                      'KhataFlow Pulse',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    subtitle: const Text(
+                      'Collection trends, largest balances and expense signals',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => KhataFlowPulseScreen(
+                          businessId: business.id,
+                          businessName: business.name,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 9),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: _line),
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xFFE5F3EF),
+                      child: Icon(Icons.auto_awesome_rounded, color: _brand),
+                    ),
+                    title: const Text(
+                      'Ask KhataFlow',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    subtitle: const Text('Ask questions by typing or speaking'),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => KhataFlowAssistantScreen(
+                          businessId: business.id,
+                          businessName: business.name,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
                 _SectionHeading(
                   title: 'Recent activity',

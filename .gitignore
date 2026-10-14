@@ -45,3 +45,12 @@ app.*.map.json
 /android/app/release
 
 /lib/icon.png
+
+# Firebase Functions local dependencies and secrets
+functions/node_modules/
+functions/.env*
+.firebase/
+
+# Render backend dependencies and secrets
+render_backend/node_modules/
+render_backend/.env*

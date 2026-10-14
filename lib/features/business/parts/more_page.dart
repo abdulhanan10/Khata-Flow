@@ -59,7 +59,10 @@ class _MorePage extends StatelessWidget {
                     Text(
                       (user.displayName?.trim().isNotEmpty ?? false)
                           ? user.displayName!.trim()
-                          : 'KhataFlow user',
+                          : ((user.email?.split('@').first.trim().isNotEmpty ??
+                                    false)
+                                ? user.email!.split('@').first.trim()
+                                : 'KhataFlow user'),
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
