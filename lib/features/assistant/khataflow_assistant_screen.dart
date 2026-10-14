@@ -1,6 +1,9 @@
-import 'package:cloud_functions/cloud_functions.dart';
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class KhataFlowAssistantScreen extends StatefulWidget {
@@ -20,6 +23,13 @@ class _ChatMessage {
   const _ChatMessage({required this.text, required this.fromUser});
   final String text;
   final bool fromUser;
+}
+
+class _AssistantRequestException implements Exception {
+  const _AssistantRequestException(this.statusCode, this.message);
+
+  final int statusCode;
+  final String message;
 }
 
 class _KhataFlowAssistantScreenState extends State<KhataFlowAssistantScreen> {
@@ -51,65 +61,120 @@ class _KhataFlowAssistantScreenState extends State<KhataFlowAssistantScreen> {
   Future<void> _send([String? suggestion]) async {
     final question = (suggestion ?? _controller.text).trim();
     if (question.isEmpty || _busy) return;
+
     _controller.clear();
+
     setState(() {
       _messages.add(_ChatMessage(text: question, fromUser: true));
       _busy = true;
     });
+
     _scrollToBottom();
+
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable(
-        'askKhataFlow',
-        options: HttpsCallableOptions(timeout: const Duration(seconds: 45)),
-      );
-      final response = await callable.call(<String, dynamic>{
-        'businessId': widget.businessId,
-        'question': question,
-      });
-      final data = Map<String, dynamic>.from(response.data as Map);
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw const _AssistantRequestException(
+          401,
+          'Please sign in again to use the assistant.',
+        );
+      }
+
+      final idToken = await user.getIdToken();
+
+      if (idToken == null || idToken.isEmpty) {
+        throw const _AssistantRequestException(
+          401,
+          'Could not verify your session. Please sign in again.',
+        );
+      }
+
+      final response = await http
+          .post(
+            Uri.parse('https://khata-flow.onrender.com/api/assistant'),
+            headers: {
+              'Authorization': 'Bearer $idToken',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              'businessId': widget.businessId,
+              'question': question,
+            }),
+          )
+          .timeout(const Duration(seconds: 120));
+
+      Map<String, dynamic> data = {};
+
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map) {
+          data = Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {
+        // Handle unexpected or non-JSON responses below.
+      }
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw _AssistantRequestException(
+          response.statusCode,
+          data['error'] as String? ?? 'The assistant request failed.',
+        );
+      }
+
       final answer = (data['answer'] as String?)?.trim();
-      if (answer == null || answer.isEmpty)
+
+      if (answer == null || answer.isEmpty) {
         throw StateError('The assistant returned an empty answer.');
+      }
+
       if (!mounted) return;
-      setState(
-        () => _messages.add(_ChatMessage(text: answer, fromUser: false)),
-      );
+
+      setState(() {
+        _messages.add(_ChatMessage(text: answer, fromUser: false));
+      });
+
       _scrollToBottom();
+
       if (_speakReplies) {
         await _tts.setLanguage('en-US');
         await _tts.setSpeechRate(.48);
         await _tts.speak(answer);
       }
-    } on FirebaseFunctionsException catch (error) {
+    } on _AssistantRequestException catch (error) {
       if (!mounted) return;
-      final message = switch (error.code) {
-        'unauthenticated' => 'Please sign in again to use the assistant.',
-        'permission-denied' => 'You do not have access to this business.',
-        'failed-precondition' =>
-          'The AI service is not configured. Follow the setup steps in README.md.',
-        'resource-exhausted' =>
-          'The free-tier request limit may have been reached. Try again later.',
-        _ =>
-          error.message ?? 'The assistant could not answer. Please try again.',
+
+      final message = switch (error.statusCode) {
+        401 => 'Please sign in again to use the assistant.',
+        403 => 'You do not have access to this business.',
+        429 => 'The AI request limit has been reached. Try again later.',
+        _ => error.message,
       };
-      setState(
-        () => _messages.add(_ChatMessage(text: message, fromUser: false)),
-      );
+
+      setState(() {
+        _messages.add(_ChatMessage(text: message, fromUser: false));
+      });
+
       _scrollToBottom();
     } catch (_) {
       if (!mounted) return;
-      setState(
-        () => _messages.add(
+
+      setState(() {
+        _messages.add(
           const _ChatMessage(
             text:
-                'I could not reach the assistant. Check your connection and Firebase Functions setup.',
+                'I could not reach the assistant. The server may be waking up, or a network error occurred. Please wait and try again.',
             fromUser: false,
           ),
-        ),
-      );
+        );
+      });
+
       _scrollToBottom();
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
